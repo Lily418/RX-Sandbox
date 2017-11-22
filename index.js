@@ -42,22 +42,29 @@ const suggestionStreams = closeButtonClickStreams.map((closeButtonClickStream) =
 
 // Rendering ---------------------------------------------------
 function renderSuggestion(suggestedUser, selector) {
-    var suggestionEl = document.querySelector(selector);
-    if (suggestedUser === null) {
-        suggestionEl.style.visibility = 'hidden';
-    } else {
-        suggestionEl.style.visibility = 'visible';
-        var usernameEl = suggestionEl.querySelector('.username');
-        usernameEl.href = suggestedUser.html_url;
-        usernameEl.textContent = suggestedUser.login;
-        var imgEl = suggestionEl.querySelector('img');
-        imgEl.src = "";
-        imgEl.src = suggestedUser.avatar_url;
-    }
+  const suggestionEl = document.querySelector(selector);
+  suggestionEl.style.visibility = 'visible';
+  var usernameEl = suggestionEl.querySelector('.username');
+  usernameEl.href = suggestedUser.html_url;
+  usernameEl.textContent = suggestedUser.login;
+  var imgEl = suggestionEl.querySelector('img');
+  imgEl.src = "";
+  imgEl.src = suggestedUser.avatar_url;
 }
 
+function hideSuggestion(suggestedUser, selector) {
+  const suggestionEl = document.querySelector(selector);
+  suggestionEl.style.visibility = 'hidden';
+}
+
+
+
 suggestionStreams.forEach((suggestionStream, index) => {
-  suggestionStream.subscribe((suggestedUser) => {
+  suggestionStream.filter(suggestedUser => suggestedUser !== null).subscribe((suggestedUser) => {
     renderSuggestion(suggestedUser, `.suggestion${index + 1}`);
+  })
+
+  suggestionStream.filter(suggestedUser => suggestedUser === null).subscribe((suggestedUser) => {
+    hideSuggestion(suggestedUser, `.suggestion${index + 1}`);
   })
 })
