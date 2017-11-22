@@ -19,7 +19,7 @@ var requestStream = refreshClickStream.startWith('startup click')
 var responseStream = requestStream
     .flatMap(function (requestUrl) {
         return Rx.Observable.fromPromise($.getJSON(requestUrl));
-    });
+    }).publish()
 
 function createSuggestionStream(closeClickStream) {
     return closeClickStream.startWith('startup click')
@@ -39,6 +39,7 @@ function createSuggestionStream(closeClickStream) {
 
 const suggestionStreams = closeButtonClickStreams.map((closeButtonClickStream) => createSuggestionStream(closeButtonClickStream))
 
+responseStream.connect();
 
 // Rendering ---------------------------------------------------
 function renderSuggestion(suggestedUser, selector) {
